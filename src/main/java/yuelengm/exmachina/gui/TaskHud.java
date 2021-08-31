@@ -18,18 +18,18 @@ public class TaskHud extends AbstractGui {
     public static int showAfter = 2;
     public static int heightBias = 20;
 
-    public static int colorNormal = Integer.parseInt("FFFFFF", 16);
-    public static int colorActive = Integer.parseInt("FFAA00", 16);
+    public static int colorNormal = 0xFFFFFF;
+    public static int colorActive = 0xFFAA00;
 
 
-    public TaskHud(MatrixStack matrixStack) {
+    public TaskHud(MatrixStack mStack) {
         this.width = mc.getWindow().getGuiScaledWidth();
         this.height = mc.getWindow().getGuiScaledHeight();
-        this.matrixStack = matrixStack;
+        this.matrixStack = mStack;
     }
 
-    public void setMatrixStack(MatrixStack stack) {
-        this.matrixStack = stack;
+    public void setMatrixStack(MatrixStack mStack) {
+        this.matrixStack = mStack;
     }
 
     public void render() {

@@ -2,7 +2,6 @@ package yuelengm.exmachina.event;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -15,7 +14,6 @@ public class ChatEvent {
     private static Minecraft mc = Minecraft.getInstance();
 
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
     public static void onChatMessage(ClientChatEvent event) {
         String msg = event.getOriginalMessage();
         String[] s = msg.split(" ");

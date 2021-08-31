@@ -1,7 +1,6 @@
 package yuelengm.exmachina.task;
 
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,7 +24,7 @@ public class TaskQueue {
 
     public static boolean autoStart = false;
     public static boolean step = false;
-    public static boolean loop = true;
+    public static boolean loop = false;
 
     public static void init() {
         if (!isInitialized) {
@@ -178,13 +177,22 @@ public class TaskQueue {
     }
 
     @SubscribeEvent()
-    @OnlyIn(Dist.CLIENT)
     public static void onTick(TickEvent.PlayerTickEvent event) {
         if (!isPaused) {
             if (toNext) {
                 toNext = false;
                 next();
             }
+        }
+    }
+
+    public static void load(List<String> content) {
+        clear();
+        for (String c : content) {
+            if (c.startsWith("!")) {
+                continue;
+            }
+            queue.add(c.split(" "));
         }
     }
 }

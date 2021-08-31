@@ -11,7 +11,6 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -25,10 +24,10 @@ public class KeyTask extends BaseTask {
     /**
      * 0~5  up down left right jump sneak
      * 6~11 click
-     * 12 attack
-     * 13 use
+     * 12~13 attack use
+     * 14~15 click
      */
-    public static boolean[] key = new boolean[14];
+    public static boolean[] key = new boolean[16];
 
     public static Map<String, Integer> map = new HashMap<String, Integer>() {{
         put("up", 0);
@@ -40,7 +39,6 @@ public class KeyTask extends BaseTask {
         put("isAttack", 12);
         put("isUse", 13);
     }};
-
 
     public static Method startUseItem = ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147121_ag");
     public static Method startAttack = ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147116_af");
@@ -91,11 +89,13 @@ public class KeyTask extends BaseTask {
                         mc.options.keyAttack.setDown(false);
                         break;
                     case "click":
-                        try {
-                            startAttack.invoke(mc);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
+                        key[14] = true;
+                        finish = false;
+//                        try {
+//                            startAttack.invoke(mc);
+//                        } catch (IllegalAccessException | InvocationTargetException e) {
+//                            e.printStackTrace();
+//                        }
                         break;
                     default:
                         break;
@@ -111,12 +111,14 @@ public class KeyTask extends BaseTask {
                         rightClickDelay = 0;
                         break;
                     case "click":
-                        try {
-                            startUseItem.invoke(mc);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                        rightClickDelay = 0;
+                        key[15] = true;
+                        finish = false;
+//                        try {
+//                            startUseItem.invoke(mc);
+//                        } catch (IllegalAccessException | InvocationTargetException e) {
+//                            e.printStackTrace();
+//                        }
+//                        rightClickDelay = 0;
                         break;
                     default:
                         break;
@@ -158,11 +160,24 @@ public class KeyTask extends BaseTask {
     @OnlyIn(Dist.CLIENT)
     public void onTick(TickEvent.PlayerTickEvent event) {
         if (!isPaused) {
-            if (key[12]) {
+            if (key[14]) {
+                try {
+                    startAttack.invoke(mc);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            } else if (key[12]) {
                 mc.options.keyAttack.setDown(true);
             }
 
-            if (key[13]) {
+            if (key[15]) {
+                try {
+                    startUseItem.invoke(mc);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                rightClickDelay = 16;
+            } else if (key[13]) {
                 if (rightClickDelay > 0) {
                     --rightClickDelay;
                 }
@@ -174,6 +189,12 @@ public class KeyTask extends BaseTask {
                     }
                     rightClickDelay = 16;
                 }
+            }
+
+            if (key[14] || key[15]) {
+                key[14] = false;
+                key[15] = false;
+                finish();
             }
         }
     }
